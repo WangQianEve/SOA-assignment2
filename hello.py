@@ -59,8 +59,10 @@ def domainSearch():
     domain = request.args.get('domain')
     indexes = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
     authors = []
+    print(type(indexes))
     for index in indexes:
-        authors.append(index[0])
+        print(type(index))
+        print(index[0])
         # authors.append(r.hget('author:'+index[0], 'name'))
     return render_template('domainSearchResult.html', authors = authors)
 
