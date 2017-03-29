@@ -61,7 +61,7 @@ def domainSearch():
     indexes = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
     authors = []
     for index in indexes:
-        authors.append(str(r.hget('author:'+index[0], 'name')))
+        authors.append(r.hget('author:'+index[0], 'name').decode('utf-8').encode('ascii'))
     return render_template('domainSearchResult.html', authors = authors)
 
 @app.route('/login')
