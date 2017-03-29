@@ -1,3 +1,4 @@
+#encoding: utf-8
 # github.py
 from flask import Flask, session, flash, request, redirect, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -60,7 +61,7 @@ def domainSearch():
     indexes = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
     authors = []
     for index in indexes:
-        authors.append(r.hget('author:'+index[0], 'name'))
+        authors.append(str(r.hget('author:'+index[0], 'name')))
     return render_template('domainSearchResult.html', authors = authors)
 
 @app.route('/login')
