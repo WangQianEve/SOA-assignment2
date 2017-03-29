@@ -3,6 +3,9 @@ from flask import Flask, session, flash, request, redirect, render_template, url
 from flask_sqlalchemy import SQLAlchemy
 
 from rauth.service import OAuth2Service
+import redis
+# connect
+r = redis.Redis(host='localhost', port=6379, db=0)
 
 # Flask config
 SQLALCHEMY_DATABASE_URI = 'sqlite:///github.db'
@@ -51,13 +54,19 @@ class User(db.Model):
 def index():
     return render_template('index.html')
 
-@app.route('/DomainSearch=<domain>')
-def domainSearch(domain=None):
-    if domain != None:
-        authors = 'hahahha'
-        return render_template('domainSearchResult.html', authors = authors)
-    else:
-        return redirect(url_for('index'))
+@app.route('/DomainSearch', methods=['GET'])
+def domainSearch():
+    domain = request.args.get('domain')
+    authors = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
+    return render_template('domainSearchResult.html', authors = authors)
+
+@app.route('/login')
+def login():
+    redirect_uri = url_for('authorized', next=request.args.get('next') or
+        request.referrer or None, _external=True)
+    # More scopes http://developer.github.com/v3/oauth/#scopes
+    params = {'redirect_uri': redirect_uri, 'scope': 'user:email'}
+    return redirect(github.get_authorize_url(**params))
 
 # same path as on application settings page
 @app.route('/github/callback')
