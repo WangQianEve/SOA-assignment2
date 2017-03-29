@@ -52,24 +52,12 @@ def index():
     return render_template('index.html')
 
 @app.route('/DomainSearch=<domain>')
-def domainSearch(name=None):
-    if 'token' in session:
-        auth = github.get_session(token = session['token'])
-        resp = auth.get('/user')
-        if resp.status_code == 200:
-            user = resp.json()
-        return render_template('about.html', user = user)
+def domainSearch(domain=None):
+    if domain != None:
+        authors = 'hahahha'
+        return render_template('domainSearchResult.html', authors = authors)
     else:
-        return redirect(url_for('login'))
-
-
-@app.route('/login')
-def login():
-    redirect_uri = url_for('authorized', next=request.args.get('next') or
-        request.referrer or None, _external=True)
-    # More scopes http://developer.github.com/v3/oauth/#scopes
-    params = {'redirect_uri': redirect_uri, 'scope': 'user:email'}
-    return redirect(github.get_authorize_url(**params))
+        return redirect(url_for('index'))
 
 # same path as on application settings page
 @app.route('/github/callback')
