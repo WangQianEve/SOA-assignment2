@@ -71,10 +71,11 @@ def domainSearch():
 @app.route('/CoauthorSearch', methods=['GET'])
 def coauthorSearch():
     author = request.args.get('author')
-    indexes = r.zrevrange('author:'+author+'coAuthor', 0, -1, withscores=True)
+    indexes = r.zrevrange('author:'+author+':coAuthor', 0, -1, withscores=True)
     authors = []
     authors.append(r.hget('author:'+author, 'name').decode('utf-8'))
     for index in indexes:
+        authors.append(index[0].decode('utf-8'))
         authors.append(r.hget('author:'+index[0], 'name').decode('utf-8'))
     return render_template('coauthorSearchResult.html', authors = authors, email=session['email'])
 
