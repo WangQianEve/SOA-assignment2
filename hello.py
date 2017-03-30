@@ -33,7 +33,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(80), unique=True)
     name = db.Column(db.String(120))
-    email = db.Column(db.String(120))
+
     def __init__(self, login, name):
         self.login = login
         self.name = name
@@ -66,7 +66,7 @@ def domainSearch():
         info.append(index[0])
         info.append(index[1])
         authors.append(info)
-    return render_template('domainSearchResult.html', authors = authors, email=session['user_id'])
+    return render_template('domainSearchResult.html', authors = authors, email=session['email'])
 
 @app.route('/CoauthorSearch', methods=['GET'])
 def coauthorSearch():
@@ -76,7 +76,7 @@ def coauthorSearch():
     authors.append(r.hget('author:'+author, 'name').decode('utf-8'))
     for index in indexes:
         authors.append(r.hget('author:'+index[0], 'name').decode('utf-8'))
-    return render_template('coauthorSearchResult.html', authors = authors)
+    return render_template('coauthorSearchResult.html', authors = authors, email=session['email'])
 
 @app.route('/login')
 def login():
@@ -102,6 +102,7 @@ def authorized():
     # save user
     session['token'] = auth.access_token
     session['user_id'] = user.id
+    session['email'] = me['email']
     return render_template('index.html', email=me['email'])
 
 if __name__ == '__main__':
