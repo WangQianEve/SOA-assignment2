@@ -75,8 +75,10 @@ def coauthorSearch():
     authors = []
     authors.append(r.hget('author:'+author, 'name').decode('utf-8'))
     for index in indexes:
-        authors.append(index[0].decode('utf-8'))
-        authors.append(r.hget('author:'+index[0], 'name').decode('utf-8'))
+        authorName=r.hget('author:'+index[0], 'name')
+        if authorName==None :
+            continue
+        authors.append(authorName.decode('utf-8'))
     return render_template('coauthorSearchResult.html', authors = authors, email=session['email'])
 
 @app.route('/login')
