@@ -31,6 +31,7 @@
 <div class="container">
   {% for author in authors %}
   <h2><a href="/CoauthorSearch?author={{author[1]}}">{{author[0]}}</a></h2>
+  h-index: {{author[2]}}
   {% endfor %}
 </div>
 

@@ -33,7 +33,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(80), unique=True)
     name = db.Column(db.String(120))
-
+    email = db.Column(db.String(120))
     def __init__(self, login, name):
         self.login = login
         self.name = name
@@ -66,7 +66,7 @@ def domainSearch():
         info.append(index[0])
         info.append(index[1])
         authors.append(info)
-    return render_template('domainSearchResult.html', authors = authors)
+    return render_template('domainSearchResult.html', authors = authors, email=session['user_id'])
 
 @app.route('/CoauthorSearch', methods=['GET'])
 def coauthorSearch():
@@ -91,7 +91,6 @@ def login():
 def authorized():
     # check to make sure the user authorized the request
     if not 'code' in request.args:
-        flash('You did not authorize the request')
         return redirect(url_for('index'))
     # make a request for the access token credentials using code
     redirect_uri = url_for('authorized', _external=True)
@@ -103,7 +102,6 @@ def authorized():
     # save user
     session['token'] = auth.access_token
     session['user_id'] = user.id
-    flash('Logged in as ' + me['name'])
     return render_template('index.html', email=me['email'])
 
 if __name__ == '__main__':
