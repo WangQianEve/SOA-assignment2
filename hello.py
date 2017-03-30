@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from rauth.service import OAuth2Service
 import redis
+import json
 # connect
 r = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -68,6 +69,19 @@ def domainSearch():
         authors.append(info)
     return render_template('domainSearchResult.html', authors = authors, email=session['email'])
 
+@app.route('/DomainSearchAPI', methods=['GET'])
+def domainSearchAPI():
+    domain = request.args.get('domain')
+    indexes = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
+    authors = []
+    for index in indexes:
+        info=[]
+        info.append(r.hget('author:'+index[0], 'name').decode('utf-8'))
+        info.append(index[0])
+        info.append(index[1])
+        authors.append(info)
+    return json.dumps(authors)
+
 @app.route('/CoauthorSearch', methods=['GET'])
 def coauthorSearch():
     author = request.args.get('author')
@@ -80,6 +94,18 @@ def coauthorSearch():
             continue
         authors.append(authorName.decode('utf-8'))
     return render_template('coauthorSearchResult.html', authors = authors, email=session['email'])
+
+@app.route('/CoauthorSearchAPI', methods=['GET'])
+def coauthorSearchAPI():
+    author = request.args.get('author')
+    indexes = r.zrevrange('author:'+author+':coAuthor', 0, -1, withscores=True)
+    authors = []
+    for index in indexes:
+        authorName=r.hget('author:'+index[0], 'name')
+        if authorName==None :
+            continue
+        authors.append(authorName.decode('utf-8'))
+    return json.dumps(authors)
 
 @app.route('/login')
 def login():
