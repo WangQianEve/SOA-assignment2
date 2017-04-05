@@ -7,11 +7,6 @@
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.bootcss.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-  <script>
-    function hw(){
-      alert("Hello World!");
-    }
-  </script>
 </head>
 <body>
 
@@ -39,6 +34,9 @@
       <label class="control-label col-sm-1" for="pwd">Domain:</label>
       <div class="col-sm-6">
         <input class="form-control" name="domain" placeholder="Enter domain">
+        {% if email %}
+        <input name="email" type="hidden" email={{email}} />
+        {% endif %}
       </div>
       <div class="col-sm-1">
         <input type="submit" class="btn btn-info" value="Search">

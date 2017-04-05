@@ -10,14 +10,12 @@ import json
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 # Flask config
-SQLALCHEMY_DATABASE_URI = 'sqlite:///github.db'
 SECRET_KEY = '\xfb\x12\xdf\xa1@i\xd6>V\xc0\xbb\x8fp\x16#Z\x0b\x81\xeb\x16'
 DEBUG = True
 
 # Flask setup
 app = Flask(__name__)
 app.config.from_object(__name__)
-db = SQLAlchemy(app)
 
 # Use your own values in your real application
 github = OAuth2Service(
@@ -28,28 +26,6 @@ github = OAuth2Service(
     client_id= 'b5a2a0cc0a16b9f6432f',
     client_secret= 'f74e87b1426f0266c7b481cb2e4a094017087268',
 )
-
-# models
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    login = db.Column(db.String(80), unique=True)
-    name = db.Column(db.String(120))
-
-    def __init__(self, login, name):
-        self.login = login
-        self.name = name
-
-    def __repr__(self):
-        return '<User %r>' % self.login
-
-    @staticmethod
-    def get_or_create(login, name):
-        user = User.query.filter_by(login=login).first()
-        if user is None:
-            user = User(login, name)
-            db.session.add(user)
-            db.session.commit()
-        return user
 
 # views
 @app.route('/')
@@ -67,7 +43,7 @@ def domainSearch():
         info.append(index[0])
         info.append(index[1])
         authors.append(info)
-    return render_template('domainSearchResult.html', authors = authors, email=session['email'])
+    return render_template('domainSearchResult.html', authors = authors, email=request.args.get('email'))
 
 @app.route('/DomainSearchAPI', methods=['GET'])
 def domainSearchAPI():
@@ -93,7 +69,7 @@ def coauthorSearch():
         if authorName==None :
             continue
         authors.append(authorName.decode('utf-8'))
-    return render_template('coauthorSearchResult.html', authors = authors, email=session['email'])
+    return render_template('coauthorSearchResult.html', authors = authors,  email=request.args.get('email'))
 
 @app.route('/CoauthorSearchAPI', methods=['GET'])
 def coauthorSearchAPI():
@@ -125,15 +101,8 @@ def authorized():
     redirect_uri = url_for('authorized', _external=True)
     data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email,public_repo')
     auth = github.get_auth_session(data=data)
-    me = auth.get('user').json()
-
-    user = User.get_or_create(me['login'], me['name'])
-    # save user
-    session['token'] = auth.access_token
-    session['user_id'] = user.id
-    session['email'] = me['email']
-    return render_template('index.html', email=me['email'])
+    email = auth.get('user').json()['email']
+    return render_template('index.html', email=email)
 
 if __name__ == '__main__':
-    db.create_all()
     app.run()
