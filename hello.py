@@ -43,7 +43,7 @@ def domainSearch():
         info.append(index[0])
         info.append(index[1])
         authors.append(info)
-    return render_template('domainSearchResult.html', authors = authors, email=request.args.get('email'))
+    return render_template('domainSearchResult.html', authors = authors)# , email=request.args.get('email'))
 
 @app.route('/DomainSearchAPI', methods=['GET'])
 def domainSearchAPI():
@@ -69,7 +69,7 @@ def coauthorSearch():
         if authorName==None :
             continue
         authors.append(authorName.decode('utf-8'))
-    return render_template('coauthorSearchResult.html', authors = authors,  email=request.args.get('email'))
+    return render_template('coauthorSearchResult.html', authors = authors)# ,  email=request.args.get('email'))
 
 @app.route('/CoauthorSearchAPI', methods=['GET'])
 def coauthorSearchAPI():
@@ -98,11 +98,11 @@ def authorized():
     if not 'code' in request.args:
         return redirect(url_for('index'))
     # make a request for the access token credentials using code
-    redirect_uri = url_for('authorized', _external=True)
-    data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email,public_repo')
-    auth = github.get_auth_session(data=data)
-    email = auth.get('user').json()['email']
-    return render_template('index.html', email=email)
+    # redirect_uri = url_for('authorized', _external=True)
+    # data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email,public_repo')
+    # auth = github.get_auth_session(data=data)
+    # email = auth.get('user').json()['email']
+    return render_template('index.html')# , email=email)
 
 if __name__ == '__main__':
     app.run()
