@@ -35,11 +35,12 @@
             document.getElementById("snap").addEventListener("click", function() {
                 context.drawImage(video, 0, 0, 640, 480);
                 var imgData=canvas.toDataURL();
+                console.log(imgData);
                 alert(imgData);
                 var imgData=imgData.substring(22);
                 // alert("eveData2"+imgData);
                 $.ajax({
-                  type: "GET",
+                  type: "POST",
                   url: "faceLogin",
                   data: {"img":imgData},
                   success: function(data){

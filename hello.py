@@ -64,7 +64,9 @@ def calculate():
 @app.route('/faceLogin', methods=['POST','GET'])
 def faceLogin():
     data = request.form['data']
-    print(type(data))
+    # print(request.method)
+    # print(data)
+    # print(type(data))
     bindata = base64.urlsafe_b64decode(data.encode('UTF-8'))
     return "success"
 
