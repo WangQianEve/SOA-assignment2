@@ -14,16 +14,13 @@ default=["0", "0", " "," "," ", " "," "," "," ","0","0","0","0","0"," "," ","0",
 def index():
     return render_template('index.html')
 
+@app.route('/carpe')
+def index():
+    return render_template('carPE.html')
+
 @app.route('/login')
 def login():
     return render_template('login.html')
-
-@app.route('/uploadImage')
-def uploadImage():
-    imgData = request.data['img']
-    imgData = base64.b64decode(imgData)
-    print(type(imgData))
-    return
 
 @app.route('/calculate', methods=['GET'])
 def calculate():
@@ -63,10 +60,12 @@ def calculate():
         print(json.loads(error.read().decode()))
         return json.loads(error.read().decode())
 
-@app.route('/faceLogin', methods=['POST'])
+@app.route('/faceLogin', methods=['POST','GET'])
 def faceLogin():
-    return request.form['data']
+    data = request.form['data']
+    print(type(data))
+    bindata = base64.urlsafe_b64decode(data.encode('UTF-8'))
+    return "success"
 
 if __name__ == '__main__':
-    print("hey")
     app.run()

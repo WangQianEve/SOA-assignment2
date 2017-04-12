@@ -39,11 +39,15 @@
                 var imgData=imgData.substring(22);
                 // alert("eveData2"+imgData);
                 $.ajax({
-                  type: "POST",
+                  type: "GET",
                   url: "faceLogin",
                   data: {"img":imgData},
-                  success: function(msg){
-                    // alert(imgData);
+                  success: function(data){
+                    if(data=="success"){
+                      window.location.href="/carpe";
+                    }else{
+                      alert("Cannot recognize!");
+                    }
                   }
                 });
             });
