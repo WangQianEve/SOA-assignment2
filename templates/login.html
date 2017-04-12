@@ -5,10 +5,6 @@
     <title>HTML5调用电脑摄像头实例</title>
     <script type="text/javascript">
         window.addEventListener("DOMContentLoaded", function() {
-          console.log("hello");
-          // var url = "{{url_for('index')}}";
-          // console.log(url);
-            // Grab elements, create settings, etc.
             var canvas = document.getElementById("canvas"),
                 context = canvas.getContext("2d"),
                 video = document.getElementById("video"),
@@ -19,20 +15,17 @@
 
             // Put video listeners into place
             if(navigator.getUserMedia) { // Standard
-                alert("支持navigator.getUserMedia");
                 navigator.getUserMedia(videoObj, function(stream) {
                     video.src = stream;
                     video.play();
                 }, errBack);
             } else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
-                alert("支持navigator.webkitGetUserMedia");
                 navigator.webkitGetUserMedia(videoObj, function(stream){
                     video.src = window.webkitURL.createObjectURL(stream);
                     video.play();
                 }, errBack);
             }
             else if(navigator.mozGetUserMedia) { // Firefox-prefixed
-                alert("支持navigator.mozGetUserMedia");
                 navigator.mozGetUserMedia(videoObj, function(stream){
                     video.src = window.URL.createObjectURL(stream);
                     video.play();
@@ -40,14 +33,14 @@
             }
             // 触发拍照动作
             document.getElementById("snap").addEventListener("click", function() {
-                console.log("picture");
                 context.drawImage(video, 0, 0, 640, 480);
                 var imgData=canvas.toDataURL();
-                alert("eveData"+imgData);
+                alert("eveData1"+imgData);
                 var imgData=imgData.substring(22);
+                alert("eveData2"+imgData);
                 $.ajax({
                   type: "POST",
-                  url: "FaceServlet",
+                  url: "faceLogin",
                   data: {"img":imgData},
                   success: function(msg){
                   }
