@@ -19,20 +19,20 @@
 
             // Put video listeners into place
             if(navigator.getUserMedia) { // Standard
-                //alert("支持navigator.getUserMedia");
+                alert("支持navigator.getUserMedia");
                 navigator.getUserMedia(videoObj, function(stream) {
                     video.src = stream;
                     video.play();
                 }, errBack);
             } else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
-                //alert("支持navigator.webkitGetUserMedia");
+                alert("支持navigator.webkitGetUserMedia");
                 navigator.webkitGetUserMedia(videoObj, function(stream){
                     video.src = window.webkitURL.createObjectURL(stream);
                     video.play();
                 }, errBack);
             }
             else if(navigator.mozGetUserMedia) { // Firefox-prefixed
-                //alert("支持navigator.mozGetUserMedia");
+                alert("支持navigator.mozGetUserMedia");
                 navigator.mozGetUserMedia(videoObj, function(stream){
                     video.src = window.URL.createObjectURL(stream);
                     video.play();
@@ -43,11 +43,8 @@
                 console.log("picture");
                 context.drawImage(video, 0, 0, 640, 480);
                 var imgData=canvas.toDataURL();
-                alert(imgData);
-                //获取图像数据是在前端截取22位以后的字符串作为图像数据
+                alert("eveData"+imgData);
                 var imgData=imgData.substring(22);
-                alert(data);
-
                 $.ajax({
                   type: "POST",
                   url: "FaceServlet",
