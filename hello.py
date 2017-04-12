@@ -1,126 +1,68 @@
 #encoding: utf-8
-# github.py
-from flask import Flask, session, flash, request, redirect, render_template, url_for
-from flask_sqlalchemy import SQLAlchemy
 
-from rauth.service import OAuth2Service
-import redis
-import json
-# import urllib.request
+from flask import Flask, render_template, request
+import base64
 import urllib2
-# connect
-r = redis.Redis(host='localhost', port=6379, db=0)
+import json
 
-# Flask config
-SECRET_KEY = '\xfb\x12\xdf\xa1@i\xd6>V\xc0\xbb\x8fp\x16#Z\x0b\x81\xeb\x16'
-DEBUG = True
-
-# Flask setup
 app = Flask(__name__)
-app.config.from_object(__name__)
 
-# Use your own values in your real application
-github = OAuth2Service(
-    name='github',
-    base_url='https://api.github.com/',
-    access_token_url='https://github.com/login/oauth/access_token',
-    authorize_url='https://github.com/login/oauth/authorize',
-    client_id= 'b5a2a0cc0a16b9f6432f',
-    client_secret= 'f74e87b1426f0266c7b481cb2e4a094017087268',
-)
+tags=["symboling", "normalized-losses", "make", "fuel-type", "aspiration", "num-of-doors", "body-style", "drive-wheels", "engine-location", "wheel-base", "length", "width", "height", "curb-weight", "engine-type", "num-of-cylinders", "engine-size", "fuel-system", "bore", "stroke", "compression-ratio", "horsepower", "peak-rpm", "city-mpg", "highway-mpg", "price"]
+default=["0", "0", " "," "," ", " "," "," "," ","0","0","0","0","0"," "," ","0"," ","0","0","0","0","0","0","0","0"]
 
-# views
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('carPE.html')
 
-@app.route('/DomainSearch', methods=['GET'])
-def domainSearch():
-    domain = request.args.get('domain')
-    indexes = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
-    authors = []
-    for index in indexes:
-        info=[]
-        info.append(r.hget('author:'+index[0], 'name').decode('utf-8'))
-        info.append(index[0])
-        info.append(index[1])
-        authors.append(info)
-    return render_template('domainSearchResult.html', authors = authors)# , email=request.args.get('email'))
+@app.route('/uploadImage')
+def uploadImage():
+    imgData = request.data['img']
+    imgData = base64.b64decode(imgData)
+    print(type(imgData))
+    return
 
-@app.route('/DomainSearchAPI', methods=['GET'])
-def domainSearchAPI():
-    domain = request.args.get('domain')
-    indexes = r.zrevrange('researchInterest:'+domain, 0, -1, withscores=True)
-    authors = []
-    for index in indexes:
-        info=[]
-        info.append(r.hget('author:'+index[0], 'name').decode('utf-8'))
-        info.append(index[0])
-        info.append(index[1])
-        authors.append(info)
-    return json.dumps(authors)
+@app.route('/calculate', methods=['GET'])
+def calculate():
+    global default
+    global tags
+    result = default
+    i = 0
+    for tag in tags:
+        t = request.args.get(tag)
+        if t!='':
+            print(len(t))
+            result[i] = t
+        i+=1
+    data ={
+        "Inputs":{
+            "input1":{
+                "ColumnNames": tags,
+                "Values": [result]
+            },
+        },
+        "GlobalParameters": {
+        }
+    }
+    body = str.encode(json.dumps(data))
+    url = 'https://ussouthcentral.services.azureml.net/workspaces/96f1042c3d7b42428e8dff82cb67cee0/services/383ab927d26f4040a9ea51e7323a32c9/execute?api-version=2.0&details=true'
+    api_key = '5ftnmicdaD7qvNIApLHl8mqzHlSy+8oip4o1DUJ7Z6I3fOzGBYiYHEtpys9sfpT/El27cEf5e+09DHXbtS5xuw=='
+    headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ api_key)}
+    req = urllib2.Request(url, body, headers)
+    try:
+        response = urllib2.urlopen(req)
+        result = json.loads(response.read().decode())
+        price=result["Results"]["output1"]["value"]["Values"][0][-1]
+        return render_template("result.html", price=price)
+    except urllib2.HTTPError as error:
+        print("The request failed with status code: " + str(error.code))
+        print(error.info())
+        print(json.loads(error.read().decode()))
+        return json.loads(error.read().decode())
 
-@app.route('/CoauthorSearch', methods=['GET'])
-def coauthorSearch():
-    author = request.args.get('author')
-    indexes = r.zrevrange('author:'+author+':coAuthor', 0, -1, withscores=True)
-    authors = []
-    authors.append(r.hget('author:'+author, 'name').decode('utf-8'))
-    for index in indexes:
-        authorName=r.hget('author:'+index[0], 'name')
-        if authorName==None :
-            continue
-        authors.append(authorName.decode('utf-8'))
-    return render_template('coauthorSearchResult.html', authors = authors)# ,  email=request.args.get('email'))
-
-@app.route('/CoauthorSearchAPI', methods=['GET'])
-def coauthorSearchAPI():
-    author = request.args.get('author')
-    indexes = r.zrevrange('author:'+author+':coAuthor', 0, -1, withscores=True)
-    authors = []
-    for index in indexes:
-        authorName=r.hget('author:'+index[0], 'name')
-        if authorName==None :
-            continue
-        authors.append(authorName.decode('utf-8'))
-    return json.dumps(authors)
-
-@app.route('/login')
-def login():
-    redirect_uri = url_for('authorized', next=request.args.get('next') or
-        request.referrer or None, _external=True)
-    # More scopes http://developer.github.com/v3/oauth/#scopes
-    params = {'redirect_uri': redirect_uri, 'scope': 'user:email'}
-    return redirect(github.get_authorize_url(**params))
-
-# same path as on application settings page
-@app.route('/github/callback')
-def authorized():
-    # check to make sure the user authorized the request
-    if not 'code' in request.args:
-        return redirect(url_for('index'))
-    # make a request for the access token credentials using code
-<<<<<<< HEAD
-    redirect_uri = url_for('authorized', _external=True)
-    data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email')
-    auth = github.get_auth_session(data=data)
-    access_token = auth.access_token
-    user_id = auth.client_id
-    url = 'https://api.github.com/user/emails?'+'access_token='+access_token
-    res_data = urllib2.urlopen(url)
-    # res_data = urllib.request.urlopen(url)
-    res = res_data.read()
-    resJson = json.loads(res)
-    email = resJson[0]['email']
-    return render_template('index.html', email=email)
-=======
-    # redirect_uri = url_for('authorized', _external=True)
-    # data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email,public_repo')
-    # auth = github.get_auth_session(data=data)
-    # email = auth.get('user').json()['email']
-    return render_template('index.html')# , email=email)
->>>>>>> 1f7f401aa4999956082f2cb191c3fee9ede63163
+@app.route('/faceLogin')
+def faceLogin():
+    return
 
 if __name__ == '__main__':
+    print("hey")
     app.run()
-

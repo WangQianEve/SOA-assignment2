@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CarPE</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.bootcss.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>二手车参数</h2>
+  <form class="form-horizontal" role="form" method="GET" action="/calculate">
+    <div class="form-group">
+     	<label class="control-label col-sm-2" for="symboling">symboling</label>
+     	<div class="col-sm-10">
+     		<input type="symboling" class="form-control" name="symboling" placeholder="2">
+     	</div>
+    </div>
+    <div class="form-group">
+     	<label class="control-label col-sm-2" for="normalized-losses">normalized-losses</label>
+     	<div class="col-sm-10">
+     		<input type="normalized-losses" class="form-control" name="normalized-losses" placeholder="164">
+     	</div>
+    </div>
+    <div class="form-group">
+     	<label class="control-label col-sm-2" for="make">make</label>
+     	<div class="col-sm-10">
+     		<input type="make" class="form-control" name="make" placeholder="audi">
+     	</div>
+    </div>
+    <div class="form-group">
+     	<label class="control-label col-sm-2" for="fuel-type">fuel-type</label>
+     	<div class="col-sm-10">
+     		<input type="fuel-type" class="form-control" name="fuel-type" placeholder="gas">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="aspiration">aspiration</label>
+     	<div class="col-sm-10">
+     		<input type="aspiration" class="form-control" name="aspiration" placeholder="std">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="num-of-doors">num-of-doors</label>
+     	<div class="col-sm-10">
+     		<input type="num-of-doors" class="form-control" name="num-of-doors" placeholder="four">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="body-style">body-style</label>
+     	<div class="col-sm-10">
+     		<input type="body-style" class="form-control" name="body-style" placeholder="sedan">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="drive-wheels">drive-wheels</label>
+     	<div class="col-sm-10">
+     		<input type="drive-wheels" class="form-control" name="drive-wheels" placeholder="4wd">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="engine-location">engine-location</label>
+     	<div class="col-sm-10">
+     		<input type="engine-location" class="form-control" name="engine-location" placeholder="front">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="wheel-base">wheel-base</label>
+     	<div class="col-sm-10">
+     		<input type="wheel-base" class="form-control" name="wheel-base" placeholder="99.4">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="length">length</label>
+     	<div class="col-sm-10">
+     		<input type="length" class="form-control" name="length" placeholder="176.6">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="width">width</label>
+     	<div class="col-sm-10">
+     		<input type="width" class="form-control" name="width" placeholder="66.4">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="height">height</label>
+     	<div class="col-sm-10">
+     		<input type="height" class="form-control" name="height" placeholder="54.3">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="curb-weight">curb-weight</label>
+     	<div class="col-sm-10">
+     		<input type="curb-weight" class="form-control" name="curb-weight" placeholder="2824">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="engine-type">engine-type</label>
+     	<div class="col-sm-10">
+     		<input type="engine-type" class="form-control" name="engine-type" placeholder="ohc">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="num-of-cylinders">num-of-cylinders</label>
+     	<div class="col-sm-10">
+     		<input type="num-of-cylinders" class="form-control" name="num-of-cylinders" placeholder="five">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="engine-size">engine-size</label>
+     	<div class="col-sm-10">
+     		<input type="engine-size" class="form-control" name="engine-size" placeholder="136">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="fuel-system">fuel-system</label>
+     	<div class="col-sm-10">
+     		<input type="fuel-system" class="form-control" name="fuel-system" placeholder="mpfi">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="bore">bore</label>
+     	<div class="col-sm-10">
+     		<input type="bore" class="form-control" name="bore" placeholder="3.19">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="stroke">stroke</label>
+     	<div class="col-sm-10">
+     		<input type="stroke" class="form-control" name="stroke" placeholder="3.4">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="compression-ratio">compression-ratio</label>
+     	<div class="col-sm-10">
+     		<input type="compression-ratio" class="form-control" name="compression-ratio" placeholder="8">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="horsepower">horsepower</label>
+     	<div class="col-sm-10">
+     		<input type="horsepower" class="form-control" name="horsepower" placeholder="115">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="peak-rpm">peak-rpm</label>
+     	<div class="col-sm-10">
+     		<input type="peak-rpm" class="form-control" name="peak-rpm" placeholder="5500">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="city-mpg">city-mpg</label>
+     	<div class="col-sm-10">
+     		<input type="city-mpg" class="form-control" name="city-mpg" placeholder="18">
+     	</div>
+     </div>
+      <div class="form-group">
+     	<label class="control-label col-sm-2" for="highway-mpg">highway-mpg</label>
+     	<div class="col-sm-10">
+     		<input type="highway-mpg" class="form-control" name="highway-mpg" placeholder="22">
+     	</div>
+     </div>
+     <div class="form-group">
+       <input type="hidden" class="form-control" name="price" placeholder="22">
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
