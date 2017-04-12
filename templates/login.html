@@ -35,7 +35,7 @@
             document.getElementById("snap").addEventListener("click", function() {
                 context.drawImage(video, 0, 0, 640, 480);
                 var imgData=canvas.toDataURL();
-                // alert("eveData1"+imgData);
+                alert(imgData);
                 var imgData=imgData.substring(22);
                 // alert("eveData2"+imgData);
                 $.ajax({
@@ -43,6 +43,7 @@
                   url: "faceLogin",
                   data: {"img":imgData},
                   success: function(msg){
+                    // alert(imgData);
                   }
                 });
             });
