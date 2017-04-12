@@ -17,7 +17,7 @@ def index():
 @app.route('/login')
 def login():
     return render_template('login.html')
-    
+
 @app.route('/uploadImage')
 def uploadImage():
     imgData = request.data['img']
@@ -63,9 +63,9 @@ def calculate():
         print(json.loads(error.read().decode()))
         return json.loads(error.read().decode())
 
-@app.route('/faceLogin')
+@app.route('/faceLogin', methods=['POST'])
 def faceLogin():
-    return
+    return request.form['data']
 
 if __name__ == '__main__':
     print("hey")
