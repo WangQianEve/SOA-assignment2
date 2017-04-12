@@ -16,7 +16,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/carpe')
-def index():
+def carpe():
     return render_template('carPE.html')
 
 @app.route('/login')
