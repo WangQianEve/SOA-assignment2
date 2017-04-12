@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from rauth.service import OAuth2Service
 import redis
 import json
+# import urllib.request
+import urllib2
 # connect
 r = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -99,10 +101,18 @@ def authorized():
         return redirect(url_for('index'))
     # make a request for the access token credentials using code
     redirect_uri = url_for('authorized', _external=True)
-    data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email,public_repo')
+    data = dict(code=request.args['code'], redirect_uri=redirect_uri, scope='user:email')
     auth = github.get_auth_session(data=data)
-    email = auth.get('user').json()['email']
+    access_token = auth.access_token
+    user_id = auth.client_id
+    url = 'https://api.github.com/user/emails?'+'access_token='+access_token
+    res_data = urllib2.urlopen(url)
+    # res_data = urllib.request.urlopen(url)
+    res = res_data.read()
+    resJson = json.loads(res)
+    email = resJson[0]['email']
     return render_template('index.html', email=email)
 
 if __name__ == '__main__':
     app.run()
+
