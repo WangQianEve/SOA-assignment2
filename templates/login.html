@@ -36,7 +36,7 @@
                 context.drawImage(video, 0, 0, 640, 480);
                 var imgData=canvas.toDataURL();
                 console.log(imgData);
-                alert(imgData);
+                // alert(imgData);
                 var imgData=imgData.substring(22);
                 // alert("eveData2"+imgData);
                 $.ajax({
@@ -44,10 +44,8 @@
                   url: "faceLogin",
                   data: {"img":imgData},
                   success: function(data){
-                    if(data=="success"){
-                      window.location.href="/carpe";
-                    }else{
-                      alert("Cannot recognize!");
+                    if(data=="unrecognized"){
+                      alert("unrecognized");
                     }
                   }
                 });

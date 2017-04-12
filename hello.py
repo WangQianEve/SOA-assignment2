@@ -68,7 +68,10 @@ def faceLogin():
     # print(data)
     # print(type(data))
     bindata = base64.urlsafe_b64decode(data.encode('UTF-8'))
-    return "success"
+    if False:
+        return render_template('carPE.html')
+    else:
+        return "unrecognized"
 
 if __name__ == '__main__':
     app.run()
