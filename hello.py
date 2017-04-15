@@ -3,13 +3,24 @@
 from flask import Flask, render_template, request
 import base64
 import urllib2
+import httplib, urllib
 import json
-import base64
 
 app = Flask(__name__)
 
 tags=["symboling", "normalized-losses", "make", "fuel-type", "aspiration", "num-of-doors", "body-style", "drive-wheels", "engine-location", "wheel-base", "length", "width", "height", "curb-weight", "engine-type", "num-of-cylinders", "engine-size", "fuel-system", "bore", "stroke", "compression-ratio", "horsepower", "peak-rpm", "city-mpg", "highway-mpg", "price"]
 default=["0", "0", " "," "," ", " "," "," "," ","0","0","0","0","0"," "," ","0"," ","0","0","0","0","0","0","0","0"]
+
+oct_headers = {
+    # Request headers
+    'Content-Type': 'application/octet-stream',
+    'Ocp-Apim-Subscription-Key': 'a1b9a236dbd64f519f38810922fc86d1',
+}
+json_headers = {
+    # Request headers
+    'Content-Type': 'application/json',
+    'Ocp-Apim-Subscription-Key': 'a1b9a236dbd64f519f38810922fc86d1',
+}
 
 @app.route('/')
 def index():
@@ -63,15 +74,77 @@ def calculate():
 
 @app.route('/faceLogin', methods=['POST','GET'])
 def faceLogin():
-    data = request.form['data']
-    # print(request.method)
-    # print(data)
-    # print(type(data))
-    bindata = base64.urlsafe_b64decode(data.encode('UTF-8'))
-    if False:
-        return render_template('carPE.html')
-    else:
+    data = request.form['img']
+    bindata = base64.b64decode(data)
+    # f = open("bin.png","wb")
+    # f.write(bindata)
+    # f.close
+    detect = json.loads(faceDetection(bindata) )
+    faceIDs=[]
+    faceId = detect[0]['faceId'].encode('utf-8')
+    faceIDs.append(faceId)
+    print(faceIDs)
+
+    identify = json.loads(faceIdentify(faceIDs) )
+    if(len(identify[0]['candidates']) == 0):
         return "unrecognized"
+    else:
+        return identify[0]['candidates'][0]["personId"]
+
+def faceDetection(bindata):
+    print("Detecting face...")
+    params = urllib.urlencode({
+        # Request parameters
+        'returnFaceId': 'true',
+        'returnFaceLandmarks': 'false',
+        'returnFaceAttributes': '',
+    })
+
+    try:
+        conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+        conn.request("POST", "/face/v1.0/detect?%s" % params, bindata, oct_headers)
+        response = conn.getresponse()
+        data = response.read()
+        print(data)
+        conn.close()
+        return data
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+def faceIdentify(faceIDs):
+    print("Identifying...")
+    params = urllib.urlencode({
+    })
+    body = {
+        "personGroupId":"carpe-group1",
+        "faceIds":faceIDs,
+        "maxNumOfCandidatesReturned":1,
+        "confidenceThreshold": 0.5
+    }
+    try:
+        conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+        conn.request("POST", "/face/v1.0/identify?%s" % params, str(body), json_headers)
+        response = conn.getresponse()
+        data = response.read()
+        print(data)
+        conn.close()
+        return data
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+def trainGroup():
+    params = urllib.urlencode({
+    })
+    print("Training person group...")
+    try:
+        conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+        conn.request("POST", "/face/v1.0/persongroups/carpe-group1/train?%s" % params, "", json_headers)
+        response = conn.getresponse()
+        data = response.read()
+        print(data)
+        conn.close()
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 if __name__ == '__main__':
     app.run()
