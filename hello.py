@@ -30,9 +30,13 @@ def index():
 def carpe():
     return render_template('carPE.html')
 
-@app.route('/login')
+@app.route('/signin')
 def login():
     return render_template('login.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
 
 @app.route('/calculate', methods=['GET'])
 def calculate():
@@ -91,6 +95,18 @@ def faceLogin():
     else:
         return identify[0]['candidates'][0]["personId"]
 
+@app.route('/faceSignup', methods=['POST','GET'])
+def faceSignup():
+    name = request.form['name']
+    print("Signing up with name: "+name)
+    personId = json.loads(personCreate(name))['personId']
+    data = request.form['img']
+    bindata = base64.b64decode(data)
+    if(personAddFace(bindata,personId)):
+        return "success"
+    else:
+        return "fail"
+
 def faceDetection(bindata):
     print("Detecting face...")
     params = urllib.urlencode({
@@ -131,6 +147,42 @@ def faceIdentify(faceIDs):
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+def personCreate(name):
+    print("Creating person: "+name+" ...")
+    params = urllib.urlencode({
+    })
+    body={
+        "name":str(name)
+    }
+    try:
+        conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+        conn.request("POST", "/face/v1.0/persongroups/carpe-group1/persons?%s"% params, str(body), json_headers)
+        response = conn.getresponse()
+        data = response.read()
+        print(data)
+        conn.close()
+        return data
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+def personAddFace(bindata,id):
+    print("Add person the face...")
+    try:
+        conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+        conn.request("POST", "/face/v1.0/persongroups/carpe-group1/persons/"+str(id)+"/persistedFaces", bindata, oct_headers)
+        response = conn.getresponse()
+        data = json.loads(response.read())
+        print(data)
+        conn.close()
+        if(data.has_key("persistedFaceId")):
+            trainGroup()
+            return True
+        else:
+            return False
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        return False
 
 def trainGroup():
     params = urllib.urlencode({
